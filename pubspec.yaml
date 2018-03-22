@@ -12,6 +12,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  google_sign_in: 3.0.0      
   firebase_auth: 0.5.0                                            # new
 
 

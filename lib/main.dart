@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+// todo: add this
+import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() => runApp(new MyApp());
 
@@ -53,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
     final form = formKey.currentState;
     if (form.validate()) {
       form.save();
-      print("Username: $_email, password: $_password");
+      print("Email: $_email, password: $_password");
       performRegister();
     }
   }
@@ -72,22 +75,39 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  void performLogin() {
-    // This is just a demo, so no actual login here.
-    final snackbar = new SnackBar(
-      content: new Text('Email: $_email, password: $_password'),
-    );
+  void performLogin() async {
+    try {
+      FirebaseUser user = await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email, password: _password);
 
-    scaffoldKey.currentState.showSnackBar(snackbar);
+      showSnackBar('Logged in: ${user.uid}');
+    }
+    catch (e) {
+      showSnackBar(e.toString());
+    }
   }
 
-  void performRegister() {
-    // This is just a demo, so no actual login here.
-    final snackbar = new SnackBar(
-      content: new Text('Full Name: $_fullName, email: $_email, password: $_password'),
-    );
+  void performRegister() async {
+    try {
+      FirebaseUser user = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email, password: _password);
+      print('Account created: ${user.uid}');
+      // TODO: To logged in screen
+      setState(() {
+        _formType = LoginFormType.login;
+      });
+      showSnackBar('Account created: ${user.uid}');
 
-    scaffoldKey.currentState.showSnackBar(snackbar);
+    } catch (e) {
+      showSnackBar(e.toString());
+    }
+  }
+
+  void showSnackBar(String message) {
+
+      final snackbar = new SnackBar(
+        content: new Text(message),
+      );
+
+      scaffoldKey.currentState.showSnackBar(snackbar);
   }
 
   Widget buildFormContents() {
