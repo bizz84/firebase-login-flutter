@@ -12,6 +12,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  firebase_auth: 0.5.0                                            # new
+
 
 
 # For information on the generic Dart part of this file, see the
