@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-// todo: add this
-import 'dart:async';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'auth.dart';
 
 void main() => runApp(new MyApp());
 
@@ -37,18 +35,25 @@ class _LoginPageState extends State<LoginPage> {
 
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   final formKey = new GlobalKey<FormState>();
+  Auth auth;
 
   String _fullName;
   String _email;
   String _password;
   LoginFormType _formType = LoginFormType.login;
 
+  @override
+  void initState() {
+    auth = new Auth(scaffoldKey: scaffoldKey);
+    super.initState();
+  }
+
   void validateAndLogin() {
     final form = formKey.currentState;
     if (form.validate()) {
       form.save();
       print("Username: $_email, password: $_password");
-      performLogin();
+      auth.login(_email, _password);
     }
   }
 
@@ -57,7 +62,7 @@ class _LoginPageState extends State<LoginPage> {
     if (form.validate()) {
       form.save();
       print("Email: $_email, password: $_password");
-      performRegister();
+      auth.register(_email, _password);
     }
   }
 
@@ -73,41 +78,6 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       _formType = LoginFormType.login;
     });
-  }
-
-  void performLogin() async {
-    try {
-      FirebaseUser user = await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email, password: _password);
-
-      showSnackBar('Logged in: ${user.uid}');
-    }
-    catch (e) {
-      showSnackBar(e.toString());
-    }
-  }
-
-  void performRegister() async {
-    try {
-      FirebaseUser user = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email, password: _password);
-      print('Account created: ${user.uid}');
-      // TODO: To logged in screen
-      setState(() {
-        _formType = LoginFormType.login;
-      });
-      showSnackBar('Account created: ${user.uid}');
-
-    } catch (e) {
-      showSnackBar(e.toString());
-    }
-  }
-
-  void showSnackBar(String message) {
-
-      final snackbar = new SnackBar(
-        content: new Text(message),
-      );
-
-      scaffoldKey.currentState.showSnackBar(snackbar);
   }
 
   Widget buildFormContents() {
