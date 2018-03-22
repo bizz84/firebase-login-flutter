@@ -37,7 +37,6 @@ class _LoginPageState extends State<LoginPage> {
   final formKey = new GlobalKey<FormState>();
   Auth auth;
 
-  String _fullName;
   String _email;
   String _password;
   LoginFormType _formType = LoginFormType.login;
@@ -80,64 +79,48 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  Widget buildFormContents() {
+  List<Widget> usernameAndPassword() {
+    return [
+      new TextFormField(
+        key: new Key('email'),
+        decoration: new InputDecoration(labelText: 'Email'),
+        validator: (val) => val.isEmpty ? 'Email can\'t be empty.' : null,
+        onSaved: (val) => _email = val,
+      ),
+      new TextFormField(
+        key: new Key('password'),
+        decoration: new InputDecoration(labelText: 'Password'),
+        obscureText: true,
+        validator: (val) => val.isEmpty ? 'Password can\'t be empty.' : null,
+        onSaved: (val) => _password = val,
+      ),
+    ];
+  }
+
+  List<Widget> submitWidgets() {
     switch (_formType) {
       case LoginFormType.login:
-        return new Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children:[
-            new TextFormField(
-              key: new Key('email'),
-              decoration: new InputDecoration(labelText: 'Email'),
-              validator: (val) => val.isEmpty ? 'Email can\'t be empty.' : null,
-              onSaved: (val) => _email = val,
-            ),
-            new TextFormField(
-              key: new Key('password'),
-              decoration: new InputDecoration(labelText: 'Password'),
-              obscureText: true,
-              validator: (val) => val.isEmpty ? 'Password can\'t be empty.' : null,
-              onSaved: (val) => _password = val,
-            ),
-            new RaisedButton(
-                child: new Text("Login"),
-                onPressed: validateAndLogin),
-            new FlatButton(
-                child: new Text("Need an account? Register"),
-                onPressed: moveToRegister),
-          ],
-        );
+        return [
+          new RaisedButton(
+            child: new Text("Login"),
+            onPressed: validateAndLogin
+          ),
+          new FlatButton(
+            child: new Text("Need an account? Register"),
+            onPressed: moveToRegister
+          ),
+        ];
       case LoginFormType.register:
-        return new Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children:[
-            new TextFormField(
-              key: new Key('fullName'),
-              decoration: new InputDecoration(labelText: 'Your full name'),
-              validator: (val) => val.isEmpty ? 'Name can\'t be empty.' : null,
-              onSaved: (val) => _fullName = val,
-            ),
-            new TextFormField(
-              key: new Key('email'),
-              decoration: new InputDecoration(labelText: 'Email'),
-              validator: (val) => val.isEmpty ? 'Email can\'t be empty.' : null,
-              onSaved: (val) => _email = val,
-            ),
-            new TextFormField(
-              key: new Key('password'),
-              decoration: new InputDecoration(labelText: 'Password'),
-              obscureText: true,
-              validator: (val) => val.isEmpty ? 'Password can\'t be empty.' : null,
-              onSaved: (val) => _password = val,
-            ),
-            new RaisedButton(
-                child: new Text("Create an account"),
-                onPressed: validateAndRegister),
-            new FlatButton(
-                child: new Text("Have an account? Login"),
-                onPressed: moveToLogin),
-          ],
-        );
+        return [
+          new RaisedButton(
+            child: new Text("Create an account"),
+            onPressed: validateAndRegister
+          ),
+          new FlatButton(
+            child: new Text("Have an account? Login"),
+            onPressed: moveToLogin
+          ),
+        ];
     }
     return null;
   }
@@ -153,7 +136,10 @@ class _LoginPageState extends State<LoginPage> {
         padding: const EdgeInsets.all(16.0),
         child: new Form(
           key: formKey,
-          child: buildFormContents()
+          child: new Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: usernameAndPassword() + submitWidgets(),
+          )
         )
       )
     );
