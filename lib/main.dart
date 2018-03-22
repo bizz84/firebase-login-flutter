@@ -47,20 +47,24 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
   }
 
-  void validateAndLogin() {
+  bool validateAndSave() {
     final form = formKey.currentState;
     if (form.validate()) {
       form.save();
       print("Username: $_email, password: $_password");
+      return true;
+    }
+    return false;
+  }
+  
+  void validateAndLogin() {
+    if (validateAndSave()) {
       auth.login(_email, _password);
     }
   }
 
   void validateAndRegister() {
-    final form = formKey.currentState;
-    if (form.validate()) {
-      form.save();
-      print("Email: $_email, password: $_password");
+    if (validateAndSave()) {
       auth.register(_email, _password);
     }
   }
