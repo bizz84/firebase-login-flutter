@@ -59,12 +59,14 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void moveToRegister() {
+    formKey.currentState.reset();
     setState(() {
       _formType = LoginFormType.register;
     });
   }
 
   void moveToLogin() {
+    formKey.currentState.reset();
     setState(() {
       _formType = LoginFormType.login;
     });
