@@ -1,38 +1,18 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class Auth {
-  Auth({this.scaffoldKey});
-  final GlobalKey<ScaffoldState> scaffoldKey;
+abstract class BaseAuth {
 
-  void login(String email, String password) async {
-    try {
-      FirebaseUser user = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+  Future<FirebaseUser> signIn(String email, String password);
+  Future<FirebaseUser> createUser(String email, String password);
+}
 
-      showSnackBar('Logged in: ${user.uid}');
-    }
-    catch (e) {
-      showSnackBar(e.toString());
-    }
+class Auth implements BaseAuth {
+  Future<FirebaseUser> signIn(String email, String password) async {
+    return await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
   }
 
-  void register(String email, String password) async {
-    try {
-      FirebaseUser user = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
-      print('Account created: ${user.uid}');
-      showSnackBar('Account created: ${user.uid}');
-
-    } catch (e) {
-      showSnackBar(e.toString());
-    }
-  }
-
-  void showSnackBar(String message) {
-
-    final snackbar = new SnackBar(
-      content: new Text(message),
-    );
-
-    scaffoldKey.currentState.showSnackBar(snackbar);
+  Future<FirebaseUser> createUser(String email, String password) async {
+    return await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
   }
 }
