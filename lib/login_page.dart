@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key, this.title, this.auth}) : super(key: key);
@@ -63,12 +62,12 @@ class _LoginPageState extends State<LoginPage> {
   void validateAndSubmit() async {
     if (validateAndSave()) {
       try {
-        FirebaseUser user = _formType == LoginFormType.login
+        String userId = _formType == LoginFormType.login
             ? await auth.signIn(_email, _password)
             : await auth.createUser(_email, _password);
         setState(() {
           _authStatus = AuthStatus.success;
-          _authHint = 'User id: ${user.uid}';
+          _authHint = 'User id: $userId';
         });
       }
       catch (e) {
@@ -161,6 +160,7 @@ class _LoginPageState extends State<LoginPage> {
         padding: const EdgeInsets.all(32.0),
         child: new Text(
             '$message\n\n$_authHint',
+            key: new Key('hint'),
             style: new TextStyle(fontSize: 18.0, color: Colors.grey),
             textAlign: TextAlign.center)
     );
