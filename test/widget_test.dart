@@ -40,15 +40,21 @@ void main() {
 
   testWidgets('empty email and password doesn\'t call sign in', (WidgetTester tester) async {
 
+    // Create an authorization mock
     AuthMock mock = new AuthMock(userId: 'uid');
+    // create a LoginPage
     LoginPage loginPage = new LoginPage(title: 'test', auth: mock);
+    // Add it to the widget tester
     await tester.pumpWidget(buildTestableWidget(loginPage));
 
+    // tap on the login button
     Finder loginButton = find.byKey(new Key('login'));
     await tester.tap(loginButton);
 
+    // 'pump' the tester again. This causes the widget to rebuild
     await tester.pump();
 
+    // check that the hint text is empty
     Finder hintText = find.byKey(new Key('hint'));
     expect(hintText.toString().contains(''), true);
 
