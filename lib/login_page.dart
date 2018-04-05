@@ -20,6 +20,23 @@ enum LoginFormType {
   register
 }
 
+enum AuthStatus {
+  notSubmitted,
+  success,
+  failure
+}
+
+String authHintMessage(LoginFormType formType, AuthStatus authStatus) {
+  switch (authStatus) {
+    case AuthStatus.notSubmitted:
+      return '';
+    case AuthStatus.success:
+      return formType == LoginFormType.login ? 'Signed In' : 'Account Created';
+    case AuthStatus.failure:
+      return formType == LoginFormType.login ? 'Sign In Error' : 'Account Creation Error';
+  }
+}
+
 class _LoginPageState extends State<LoginPage> {
   _LoginPageState({this.auth});
   final BaseAuth auth;
@@ -30,6 +47,8 @@ class _LoginPageState extends State<LoginPage> {
   String _email;
   String _password;
   LoginFormType _formType = LoginFormType.login;
+  AuthStatus _authStatus = AuthStatus.notSubmitted;
+  String _authHint = "";
 
   bool validateAndSave() {
     final form = formKey.currentState;
@@ -41,27 +60,29 @@ class _LoginPageState extends State<LoginPage> {
     return false;
   }
   
-  void validateAndLogin() async {
+  void validateAndSubmit() async {
     if (validateAndSave()) {
       try {
-        FirebaseUser user = await auth.signIn(_email, _password);
-        _showSnackBar('Logged in: ${user.uid}');
+        FirebaseUser user = _formType == LoginFormType.login
+            ? await auth.signIn(_email, _password)
+            : await auth.createUser(_email, _password);
+        setState(() {
+          _authStatus = AuthStatus.success;
+          _authHint = 'User id: ${user.uid}';
+        });
       }
       catch (e) {
-        _showSnackBar(e.toString());
+        setState(() {
+          _authStatus = AuthStatus.failure;
+          _authHint = e.toString();
+        });
+        print(e);
       }
-    }
-  }
-
-  void validateAndRegister() async {
-    if (validateAndSave()) {
-      try {
-        FirebaseUser user = await auth.createUser(_email, _password);
-        _showSnackBar('Account created: ${user.uid}');
-
-      } catch (e) {
-        _showSnackBar(e.toString());
-      }
+    } else {
+      setState(() {
+        _authStatus = AuthStatus.notSubmitted;
+        _authHint = "";
+      });
     }
   }
 
@@ -69,6 +90,8 @@ class _LoginPageState extends State<LoginPage> {
     formKey.currentState.reset();
     setState(() {
       _formType = LoginFormType.register;
+      _authStatus = AuthStatus.notSubmitted;
+      _authHint = "";
     });
   }
 
@@ -76,18 +99,10 @@ class _LoginPageState extends State<LoginPage> {
     formKey.currentState.reset();
     setState(() {
       _formType = LoginFormType.login;
+      _authStatus = AuthStatus.notSubmitted;
+      _authHint = "";
     });
   }
-
-  void _showSnackBar(String message) {
-
-    final snackbar = new SnackBar(
-      content: new Text(message),
-    );
-
-    scaffoldKey.currentState.showSnackBar(snackbar);
-  }
-
 
   List<Widget> usernameAndPassword() {
     return [
@@ -113,8 +128,8 @@ class _LoginPageState extends State<LoginPage> {
         return [
           new RaisedButton(
             key: new Key('login'),
-            child: new Text("Login"),
-            onPressed: validateAndLogin
+            child: new Text("Login", style: new TextStyle(fontSize: 20.0)),
+            onPressed: validateAndSubmit
           ),
           new FlatButton(
             key: new Key('need-account'),
@@ -126,8 +141,8 @@ class _LoginPageState extends State<LoginPage> {
         return [
           new RaisedButton(
             key: new Key('register'),
-            child: new Text("Create an account"),
-            onPressed: validateAndRegister
+            child: new Text("Create an account", style: new TextStyle(fontSize: 20.0)),
+            onPressed: validateAndSubmit
           ),
           new FlatButton(
             key: new Key('need-login'),
@@ -138,6 +153,19 @@ class _LoginPageState extends State<LoginPage> {
     }
     return null;
   }
+
+  Widget hintText() {
+    String message = authHintMessage(_formType, _authStatus);
+    return new Container(
+        height: 80.0,
+        padding: const EdgeInsets.all(32.0),
+        child: new Text(
+            '$message\n\n$_authHint',
+            style: new TextStyle(fontSize: 18.0, color: Colors.grey),
+            textAlign: TextAlign.center)
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +180,7 @@ class _LoginPageState extends State<LoginPage> {
           key: formKey,
           child: new Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: usernameAndPassword() + submitWidgets(),
+            children: usernameAndPassword() + submitWidgets() + [ hintText() ],
           )
         )
       )
