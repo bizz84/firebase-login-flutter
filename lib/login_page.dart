@@ -14,7 +14,7 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => new _LoginPageState(auth: auth);
 }
 
-enum LoginFormType {
+enum FormType {
   login,
   register
 }
@@ -25,14 +25,14 @@ enum AuthStatus {
   failure
 }
 
-String authHintMessage(LoginFormType formType, AuthStatus authStatus) {
+String authHintMessage(FormType formType, AuthStatus authStatus) {
   switch (authStatus) {
     case AuthStatus.notSubmitted:
       return '';
     case AuthStatus.success:
-      return formType == LoginFormType.login ? 'Signed In' : 'Account Created';
+      return formType == FormType.login ? 'Signed In' : 'Account Created';
     case AuthStatus.failure:
-      return formType == LoginFormType.login ? 'Sign In Error' : 'Account Creation Error';
+      return formType == FormType.login ? 'Sign In Error' : 'Account Creation Error';
   }
 }
 
@@ -40,12 +40,11 @@ class _LoginPageState extends State<LoginPage> {
   _LoginPageState({this.auth});
   final BaseAuth auth;
 
-  static final scaffoldKey = LoginPage.scaffoldKey;
   static final formKey = LoginPage.formKey;
 
   String _email;
   String _password;
-  LoginFormType _formType = LoginFormType.login;
+  FormType _formType = FormType.login;
   AuthStatus _authStatus = AuthStatus.notSubmitted;
   String _authHint = "";
 
@@ -53,7 +52,6 @@ class _LoginPageState extends State<LoginPage> {
     final form = formKey.currentState;
     if (form.validate()) {
       form.save();
-      print("Username: $_email, password: $_password");
       return true;
     }
     return false;
@@ -62,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
   void validateAndSubmit() async {
     if (validateAndSave()) {
       try {
-        String userId = _formType == LoginFormType.login
+        String userId = _formType == FormType.login
             ? await auth.signIn(_email, _password)
             : await auth.createUser(_email, _password);
         setState(() {
@@ -88,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
   void moveToRegister() {
     formKey.currentState.reset();
     setState(() {
-      _formType = LoginFormType.register;
+      _formType = FormType.register;
       _authStatus = AuthStatus.notSubmitted;
       _authHint = "";
     });
@@ -97,7 +95,7 @@ class _LoginPageState extends State<LoginPage> {
   void moveToLogin() {
     formKey.currentState.reset();
     setState(() {
-      _formType = LoginFormType.login;
+      _formType = FormType.login;
       _authStatus = AuthStatus.notSubmitted;
       _authHint = "";
     });
@@ -123,7 +121,7 @@ class _LoginPageState extends State<LoginPage> {
 
   List<Widget> submitWidgets() {
     switch (_formType) {
-      case LoginFormType.login:
+      case FormType.login:
         return [
           new RaisedButton(
             key: new Key('login'),
@@ -136,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
             onPressed: moveToRegister
           ),
         ];
-      case LoginFormType.register:
+      case FormType.register:
         return [
           new RaisedButton(
             key: new Key('register'),
@@ -170,7 +168,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      key: scaffoldKey,
       appBar: new AppBar(
         title: new Text(widget.title),
       ),
