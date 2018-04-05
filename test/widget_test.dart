@@ -48,6 +48,8 @@ void main() {
     Finder loginButton = find.byKey(new Key('login'));
     await tester.tap(loginButton);
 
+    await tester.pump();
+
     Finder hintText = find.byKey(new Key('hint'));
     expect(hintText.toString().contains(''), true);
 
