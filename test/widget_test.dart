@@ -1,9 +1,3 @@
-// This is a basic Flutter widget test.
-// To perform an interaction with a widget in your test, use the WidgetTester utility that Flutter
-// provides. For example, you can send tap and scroll gestures. You can also use WidgetTester to
-// find child widgets in the widget tree, read text, and verify that the values of widget properties
-// are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -37,7 +31,7 @@ class AuthMock implements Auth {
 
 void main() {
 
-  Widget makeTestWidget(LoginPage loginPage) {
+  Widget buildTestableWidget(LoginPage loginPage) {
     return new MediaQuery(
       data: new MediaQueryData(),
       child: new MaterialApp(home: loginPage)
@@ -49,7 +43,7 @@ void main() {
 
     AuthMock mock = new AuthMock(userId: 'uid');
     LoginPage loginPage = new LoginPage(title: 'test', auth: mock);
-    await tester.pumpWidget(makeTestWidget(loginPage));
+    await tester.pumpWidget(buildTestableWidget(loginPage));
 
     Finder loginButton = find.byKey(new Key('login'));
     await tester.tap(loginButton);
@@ -64,7 +58,7 @@ void main() {
 
     AuthMock mock = new AuthMock(userId: 'uid');
     LoginPage loginPage = new LoginPage(title: 'test', auth: mock);
-    await tester.pumpWidget(makeTestWidget(loginPage));
+    await tester.pumpWidget(buildTestableWidget(loginPage));
 
     Finder emailField = find.byKey(new Key('email'));
     await tester.enterText(emailField, 'email');
@@ -87,7 +81,7 @@ void main() {
 
     AuthMock mock = new AuthMock(userId: null);
     LoginPage loginPage = new LoginPage(title: 'test', auth: mock);
-    await tester.pumpWidget(makeTestWidget(loginPage));
+    await tester.pumpWidget(buildTestableWidget(loginPage));
 
     Finder emailField = find.byKey(new Key('email'));
     await tester.enterText(emailField, 'email');
