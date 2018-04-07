@@ -7,9 +7,6 @@ class LoginPage extends StatefulWidget {
   final String title;
   final BaseAuth auth;
 
-  static final scaffoldKey = new GlobalKey<ScaffoldState>();
-  static final formKey = new GlobalKey<FormState>();
-
   @override
   _LoginPageState createState() => new _LoginPageState(auth: auth);
 }
@@ -19,34 +16,16 @@ enum FormType {
   register
 }
 
-enum AuthStatus {
-  notSubmitted,
-  success,
-  failure
-}
-
-String authHintMessage(FormType formType, AuthStatus authStatus) {
-  switch (authStatus) {
-    case AuthStatus.notSubmitted:
-      return '';
-    case AuthStatus.success:
-      return formType == FormType.login ? 'Signed In' : 'Account Created';
-    case AuthStatus.failure:
-      return formType == FormType.login ? 'Sign In Error' : 'Account Creation Error';
-  }
-}
-
 class _LoginPageState extends State<LoginPage> {
   _LoginPageState({this.auth});
   final BaseAuth auth;
 
-  static final formKey = LoginPage.formKey;
+  static final formKey = new GlobalKey<FormState>();
 
   String _email;
   String _password;
   FormType _formType = FormType.login;
-  AuthStatus _authStatus = AuthStatus.notSubmitted;
-  String _authHint = "";
+  String _authHint = '';
 
   bool validateAndSave() {
     final form = formKey.currentState;
@@ -64,21 +43,18 @@ class _LoginPageState extends State<LoginPage> {
             ? await auth.signIn(_email, _password)
             : await auth.createUser(_email, _password);
         setState(() {
-          _authStatus = AuthStatus.success;
-          _authHint = 'User id: $userId';
+          _authHint = 'Signed In\n\nUser id: $userId';
         });
       }
       catch (e) {
         setState(() {
-          _authStatus = AuthStatus.failure;
-          _authHint = e.toString();
+          _authHint = 'Sign In Error\n\n${e.toString()}';
         });
         print(e);
       }
     } else {
       setState(() {
-        _authStatus = AuthStatus.notSubmitted;
-        _authHint = "";
+        _authHint = '';
       });
     }
   }
@@ -87,8 +63,7 @@ class _LoginPageState extends State<LoginPage> {
     formKey.currentState.reset();
     setState(() {
       _formType = FormType.register;
-      _authStatus = AuthStatus.notSubmitted;
-      _authHint = "";
+      _authHint = '';
     });
   }
 
@@ -96,8 +71,7 @@ class _LoginPageState extends State<LoginPage> {
     formKey.currentState.reset();
     setState(() {
       _formType = FormType.login;
-      _authStatus = AuthStatus.notSubmitted;
-      _authHint = "";
+      _authHint = '';
     });
   }
 
@@ -152,12 +126,11 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget hintText() {
-    String message = authHintMessage(_formType, _authStatus);
     return new Container(
         height: 80.0,
         padding: const EdgeInsets.all(32.0),
         child: new Text(
-            '$message\n\n$_authHint',
+            _authHint,
             key: new Key('hint'),
             style: new TextStyle(fontSize: 18.0, color: Colors.grey),
             textAlign: TextAlign.center)
