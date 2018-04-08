@@ -1,15 +1,3 @@
-Sample login and registration app with Firebase built in Flutter.
-
-This repo contains the source code for my blog post:
-
-* [Take your Flutter tests to the next level](https://medium.com/p/e2fb15641809).
-
-## Preview
-
-![](images/writing-testable-code-flutter-sign-in-failed.png)
-
-## License
-
 Copyright (c) 2018 Andrea Bizzotto [mailto:bizz84@gmail.com](bizz84@gmail.com)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
