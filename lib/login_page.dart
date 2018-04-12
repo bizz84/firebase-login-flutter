@@ -8,7 +8,7 @@ class LoginPage extends StatefulWidget {
   final BaseAuth auth;
 
   @override
-  _LoginPageState createState() => new _LoginPageState(auth: auth);
+  _LoginPageState createState() => new _LoginPageState();
 }
 
 enum FormType {
@@ -17,9 +17,6 @@ enum FormType {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  _LoginPageState({this.auth});
-  final BaseAuth auth;
-
   static final formKey = new GlobalKey<FormState>();
 
   String _email;
@@ -40,8 +37,8 @@ class _LoginPageState extends State<LoginPage> {
     if (validateAndSave()) {
       try {
         String userId = _formType == FormType.login
-            ? await auth.signIn(_email, _password)
-            : await auth.createUser(_email, _password);
+            ? await widget.auth.signIn(_email, _password)
+            : await widget.auth.createUser(_email, _password);
         setState(() {
           _authHint = 'Signed In\n\nUser id: $userId';
         });
