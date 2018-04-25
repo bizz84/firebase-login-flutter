@@ -10,17 +10,29 @@ class AuthMock implements Auth {
   String userId;
 
   bool didRequestSignIn = false;
-  bool didRequestCreateUser = true;
+  bool didRequestCreateUser = false;
+  bool didRequestLogout = false;
+
   Future<String> signIn(String email, String password) async {
     didRequestSignIn = true;
-    if (userId != null) {
-      return Future.value(userId);
-    } else {
-      throw StateError('No user');
-    }
+    return _userIdOrError();
   }
+
   Future<String> createUser(String email, String password) async {
     didRequestCreateUser = true;
+    return _userIdOrError();
+  }
+
+  Future<String> currentUser() async {
+    return _userIdOrError();
+  }
+
+  Future<void> signOut() async {
+    didRequestLogout = true;
+    return Future.value();
+  }
+
+  Future<String> _userIdOrError() {
     if (userId != null) {
       return Future.value(userId);
     } else {
