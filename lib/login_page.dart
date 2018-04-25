@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:login/primary_button.dart';
 import 'auth.dart';
 
 class LoginPage extends StatefulWidget {
@@ -76,19 +77,21 @@ class _LoginPageState extends State<LoginPage> {
 
   List<Widget> usernameAndPassword() {
     return [
-      new TextFormField(
+      padded(child: new TextFormField(
         key: new Key('email'),
         decoration: new InputDecoration(labelText: 'Email'),
+        autocorrect: false,
         validator: (val) => val.isEmpty ? 'Email can\'t be empty.' : null,
         onSaved: (val) => _email = val,
-      ),
-      new TextFormField(
+      )),
+      padded(child: new TextFormField(
         key: new Key('password'),
         decoration: new InputDecoration(labelText: 'Password'),
         obscureText: true,
+        autocorrect: false,
         validator: (val) => val.isEmpty ? 'Password can\'t be empty.' : null,
         onSaved: (val) => _password = val,
-      ),
+      )),
     ];
   }
 
@@ -96,9 +99,10 @@ class _LoginPageState extends State<LoginPage> {
     switch (_formType) {
       case FormType.login:
         return [
-          new RaisedButton(
+          new PrimaryButton(
             key: new Key('login'),
-            child: new Text("Login", style: new TextStyle(fontSize: 20.0)),
+            text: 'Login',
+            height: 44.0,
             onPressed: validateAndSubmit
           ),
           new FlatButton(
@@ -109,9 +113,10 @@ class _LoginPageState extends State<LoginPage> {
         ];
       case FormType.register:
         return [
-          new RaisedButton(
+          new PrimaryButton(
             key: new Key('register'),
-            child: new Text("Create an account", style: new TextStyle(fontSize: 20.0)),
+            text: 'Create an account',
+            height: 44.0,
             onPressed: validateAndSubmit
           ),
           new FlatButton(
@@ -126,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget hintText() {
     return new Container(
-        height: 80.0,
+        //height: 80.0,
         padding: const EdgeInsets.all(32.0),
         child: new Text(
             _authHint,
@@ -143,16 +148,39 @@ class _LoginPageState extends State<LoginPage> {
       appBar: new AppBar(
         title: new Text(widget.title),
       ),
-      body: new Container(
+      backgroundColor: Colors.grey[300],
+      body: new SingleChildScrollView(child: new Container(
         padding: const EdgeInsets.all(16.0),
-        child: new Form(
-          key: formKey,
-          child: new Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: usernameAndPassword() + submitWidgets() + [ hintText() ],
-          )
+        child: new Column(
+          children: [
+            new Card(
+              child: new Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                new Container(
+                    padding: const EdgeInsets.all(16.0),
+                    child: new Form(
+                        key: formKey,
+                        child: new Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: usernameAndPassword() + submitWidgets(),
+                        )
+                    )
+                ),
+              ])
+            ),
+            hintText()
+          ]
         )
-      )
+      ))
+    );
+  }
+
+  Widget padded({Widget child}) {
+    return new Padding(
+      padding: EdgeInsets.symmetric(vertical: 8.0),
+      child: child,
     );
   }
 }
+
